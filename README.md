@@ -14,9 +14,7 @@ The analysis helps the company answer business questions such as:
 - What is the average payment value by payment type?  
 - Which orders are the most expensive?  
 - How do delivery times vary by region?
-- ## Example Analytics (Screenshot)  
-![screenshot](images/analytics.png)  
-*(temporary screenshot, will be updated later with real visualizations)*  
+
 
 ---
 
