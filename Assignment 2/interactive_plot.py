@@ -1,0 +1,67 @@
+import psycopg2
+import pandas as pd
+import plotly.express as px
+
+# ==============================
+# Database connection
+# ==============================
+conn = psycopg2.connect(
+    host="localhost",
+    database="postgres",
+    user="postgres",
+    password="123456",
+    port="5433"
+)
+
+# ==============================
+# SQL Query — Monthly Orders by State
+# ==============================
+query = """
+SELECT 
+    DATE_TRUNC('month', o.order_purchase_timestamp) AS month,
+    c.customer_state AS state,
+    COUNT(o.order_id) AS total_orders
+FROM olist_orders_dataset o
+JOIN olist_customers_dataset c
+    ON o.customer_id = c.customer_id
+GROUP BY month, state
+ORDER BY month, state;
+"""
+
+df = pd.read_sql(query, conn)
+conn.close()
+
+# ==============================
+# Data Preparation
+# ==============================
+# Convert timestamp to string month-year for animation
+df['month'] = df['month'].dt.strftime('%Y-%m')
+
+# ==============================
+# Plotly Time Slider Visualization
+# ==============================
+fig = px.bar(
+    df,
+    x="state",
+    y="total_orders",
+    color="state",
+    animation_frame="month",
+    title="Monthly Orders by State Over Time",
+    labels={
+        "state": "Customer State",
+        "total_orders": "Number of Orders",
+        "month": "Month"
+    }
+)
+
+fig.update_layout(
+    title_font_size=22,
+    xaxis_title_font_size=16,
+    yaxis_title_font_size=16,
+    legend_title_text="State",
+    bargap=0.2
+)
+
+fig.show()
+
+print("✅ Interactive time slider chart successfully created!")
